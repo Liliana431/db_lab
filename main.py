@@ -1,3 +1,5 @@
-from view.main_menu import main_menu
+from view import View
 
-main_menu('составление таблицы')
+# main_menu('составление таблицы')
+root = View()
+root.mainloop()
