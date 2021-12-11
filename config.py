@@ -1,4 +1,6 @@
-import psycopg2
-conn = psycopg2.connect(dbname='sales_book', user='postgres',
-                        password='1234qwer', host='localhost')
-CURSOR = conn.cursor()
+from psycopg2 import sql, connect
+
+connect = connect(dbname='sales_book', user='postgres',
+                  password='1234qwer', host='localhost')
+CURSOR = connect.cursor()
+connect.autocommit = True

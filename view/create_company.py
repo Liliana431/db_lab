@@ -78,15 +78,15 @@ class CreateCompany:
         self.content.pack()
 
     def submit_company(self):
-        self.name_text = self.name.get().split()
-        self.city_text = self.city.get().split()
-        self.address_text = self.address.get().split()
+        self.name_text = self.name.get().strip()
+        self.city_text = self.city.get().strip()
+        self.address_text = self.address.get().strip()
         if re.fullmatch(r'(\+7|8)\d{10}', self.phone_number.get()):
             self.phone_number_text = self.phone_number.get()
         else:
             self.phone_number_text = ''
-        self.pay_account_text = self.pay_account.get().split()
-        self.currency_text = self.currency.get().split()
+        self.pay_account_text = self.pay_account.get().strip()
+        self.currency_text = self.currency.get().strip()
         if re.fullmatch(r'\d{10}', self.INN.get()):
             self.INN_text = int(self.INN.get())
         else:
