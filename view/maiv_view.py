@@ -1,7 +1,9 @@
 from tkinter import *
+from tkinter import ttk
 
+from src.organization import get_organization_list
 from src.sales_book import SalesBook
-from view.create_company import CreateCompany
+from view.create_invoice import CreateInvoice
 
 
 class MainView:
@@ -25,16 +27,16 @@ class MainView:
 
     def create_main_menu(self):
         # меню
-        sales_book = Menu(self.menu)
+        sales_book = Menu(self.menu, tearoff=0)
         sales_book.add_command(label='Дополнить вручную')
         sales_book.add_command(label='Показать за период', command=self.show_sales_book)
         self.menu.add_cascade(label='Книга продаж', menu=sales_book)
 
-        invoice = Menu(self.menu)
+        invoice = Menu(self.menu, tearoff=0)
         invoice.add_command(label='Добавить', command=self.add_invoice)
         self.menu.add_cascade(label='Счет-фактура', menu=invoice)
 
-        search = Menu(self.menu)
+        search = Menu(self.menu, tearoff=0)
         search.add_command(label='Счет-фактура по номеру')
         self.menu.add_cascade(label='Поиск', menu=search)
 
@@ -102,36 +104,8 @@ class MainView:
         self.sales_book.grid(row=4, columnspan=4)
 
     def add_invoice(self):
-        self.content.destroy()
-        self.content = Frame(self.root)
-        Label(master=self.content, wraplength=1000, text="Создать счет-фактуру").grid(row=0, column=0, columnspan=5)
-
-        Button(self.content, text='Добавить организацию', command=self.add_company).grid(row=1)
-
-        Label(master=self.content, wraplength=400, text="Поставщик").grid(row=2, column=0, columnspan=2)
-        Label(master=self.content, wraplength=600, text="поменять на строку выбота").grid(row=2, column=2, columnspan=3)
-        Label(master=self.content, wraplength=400, text="Покупатель").grid(row=3, column=0, columnspan=2)
-        Label(master=self.content, wraplength=600, text="поменять на строку выбота").grid(row=3, column=2, columnspan=3)
-        Label(master=self.content, wraplength=400, text="Грузоотправитель").grid(row=4, column=0, columnspan=2)
-        Label(master=self.content, wraplength=600, text="поменять на строку выбота").grid(row=4, column=2, columnspan=3)
-        Label(master=self.content, wraplength=400, text="Грузополучатель").grid(row=5, column=0, columnspan=2)
-        Label(master=self.content, wraplength=600, text="поменять на строку выбота").grid(row=5, column=2, columnspan=3)
-
-        Label(master=self.content, wraplength=200, text="Добавить товар").grid(row=6, column=0)
-        Label(master=self.content, wraplength=200, text="строка выбора товара").grid(row=6, column=1)
-        Label(master=self.content, wraplength=200, text="поле воода количество").grid(row=6, column=2)
-        Label(master=self.content, wraplength=200, text="кнопка ок").grid(row=6, column=3)
-        Label(master=self.content, wraplength=200, text="кнопка новый товар").grid(row=6, column=4)
-
-        # product list
-
-        # button submit
-
-        self.content.pack()
-
-    def add_company(self):
-        comp = CreateCompany(self.root, self.content, self.add_invoice)
-        self.content = comp.content
+        inv = CreateInvoice(self.root, self.content, self.create_main_menu)
+        self.content = inv.content
 
     def mainloop(self):
         self.root.mainloop()

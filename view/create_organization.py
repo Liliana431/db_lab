@@ -1,10 +1,10 @@
 from tkinter import *
 import re
 
-from src.company import create_company
+from src.organization import create_organization
 
 
-class CreateCompany:
+class CreateOrganization:
     def __init__(self, root, content, add_invoice):
         self.add_invoice = add_invoice
         self.root = root
@@ -20,9 +20,9 @@ class CreateCompany:
         self.OKONH_text = ''
         self.OKPO_text = ''
 
-        self.add_company()
+        self.add_organization()
 
-    def add_company(self):
+    def add_organization(self):
         self.content.destroy()
         self.content = Frame(self.root)
 
@@ -109,16 +109,16 @@ class CreateCompany:
                 and self.INN_text
                 and self.OKONH_text
                 and self.OKPO_text):
-            self.add_company()
+            self.add_organization()
         else:
-            create_company(name=self.name_text,
-                           city=self.city_text,
-                           address=self.address_text,
-                           phone_number=self.phone_number_text,
-                           pay_account=self.pay_account_text,
-                           currency=self.currency_text,
-                           INN=self.INN_text,
-                           OKONH=self.OKONH_text,
-                           OKPO=self.OKPO_text)
+            create_organization(name=self.name_text,
+                                city=self.city_text,
+                                address=self.address_text,
+                                phone_number=self.phone_number_text,
+                                pay_account=self.pay_account_text,
+                                currency=self.currency_text,
+                                INN=self.INN_text,
+                                OKONH=self.OKONH_text,
+                                OKPO=self.OKPO_text)
             self.content.destroy()
             self.add_invoice()

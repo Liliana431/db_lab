@@ -1,7 +1,7 @@
 from config import sql, CURSOR as cursor
 
 
-def create_company(name, city, address, phone_number, pay_account, currency, INN, OKONH, OKPO):
+def create_organization(name, city, address, phone_number, pay_account, currency, INN, OKONH, OKPO):
     values = [
         (name, city, address, phone_number, pay_account, currency, INN, OKONH, OKPO)
     ]
@@ -9,3 +9,9 @@ def create_company(name, city, address, phone_number, pay_account, currency, INN
         sql.SQL(',').join(map(sql.Literal, values))
     )
     cursor.execute(insert)
+
+
+def get_organization_list():
+    cursor.execute('SELECT id, name FROM company')
+    orgs = cursor.fetchall()
+    return orgs
