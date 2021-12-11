@@ -1,5 +1,5 @@
-from view import View
+from view.maiv_view import MainView
 
 # main_menu('составление таблицы')
-root = View()
+root = MainView()
 root.mainloop()

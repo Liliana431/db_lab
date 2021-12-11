@@ -1,34 +1,37 @@
 from tkinter import *
 
 from src.sales_book import SalesBook
+from view.create_company import CreateCompany
 
 
-class View:
+class MainView:
     def __init__(self):
         self.invoice_list = SalesBook()
         self.root = Tk()
         self.root.title('Книга продаж')
-        self.root.geometry('900x600')
+        self.root.geometry('1000x600')
 
         self.menu = Menu(self.root)
         self.create_main_menu()
 
+        # для списка счет-фактур
         self.date_from = self.invoice_list.date_from
         self.date_to = self.invoice_list.date_to
 
-        self.content = Frame(self.root)
-        self.sales_book = Frame(self.content)
+        self.content = Frame(self.root)  # главное окно
+        self.sales_book = Frame(self.content)  # только для списка счет-фактур, приизменении даты меняется только он
 
-        self.create_sales_book()
+        self.show_sales_book()
 
     def create_main_menu(self):
         # меню
         sales_book = Menu(self.menu)
         sales_book.add_command(label='Дополнить вручную')
+        sales_book.add_command(label='Показать за период', command=self.show_sales_book)
         self.menu.add_cascade(label='Книга продаж', menu=sales_book)
 
         invoice = Menu(self.menu)
-        invoice.add_command(label='Добавить')
+        invoice.add_command(label='Добавить', command=self.add_invoice)
         self.menu.add_cascade(label='Счет-фактура', menu=invoice)
 
         search = Menu(self.menu)
@@ -37,7 +40,7 @@ class View:
 
         self.root.config(menu=self.menu)
 
-    def create_sales_book(self):
+    def show_sales_book(self):
         self.content.destroy()
         self.content = Frame(self.root)
 
@@ -97,6 +100,38 @@ class View:
         # список счет-фактур
         Label(master=self.sales_book, text=(str(self.date_from) + ' ' + str(self.date_to))).grid(row=6)
         self.sales_book.grid(row=4, columnspan=4)
+
+    def add_invoice(self):
+        self.content.destroy()
+        self.content = Frame(self.root)
+        Label(master=self.content, wraplength=1000, text="Создать счет-фактуру").grid(row=0, column=0, columnspan=5)
+
+        Button(self.content, text='Добавить организацию', command=self.add_company).grid(row=1)
+
+        Label(master=self.content, wraplength=400, text="Поставщик").grid(row=2, column=0, columnspan=2)
+        Label(master=self.content, wraplength=600, text="поменять на строку выбота").grid(row=2, column=2, columnspan=3)
+        Label(master=self.content, wraplength=400, text="Покупатель").grid(row=3, column=0, columnspan=2)
+        Label(master=self.content, wraplength=600, text="поменять на строку выбота").grid(row=3, column=2, columnspan=3)
+        Label(master=self.content, wraplength=400, text="Грузоотправитель").grid(row=4, column=0, columnspan=2)
+        Label(master=self.content, wraplength=600, text="поменять на строку выбота").grid(row=4, column=2, columnspan=3)
+        Label(master=self.content, wraplength=400, text="Грузополучатель").grid(row=5, column=0, columnspan=2)
+        Label(master=self.content, wraplength=600, text="поменять на строку выбота").grid(row=5, column=2, columnspan=3)
+
+        Label(master=self.content, wraplength=200, text="Добавить товар").grid(row=6, column=0)
+        Label(master=self.content, wraplength=200, text="строка выбора товара").grid(row=6, column=1)
+        Label(master=self.content, wraplength=200, text="поле воода количество").grid(row=6, column=2)
+        Label(master=self.content, wraplength=200, text="кнопка ок").grid(row=6, column=3)
+        Label(master=self.content, wraplength=200, text="кнопка новый товар").grid(row=6, column=4)
+
+        # product list
+
+        # button submit
+
+        self.content.pack()
+
+    def add_company(self):
+        comp = CreateCompany(self.root, self.content, self.add_invoice)
+        self.content = comp.content
 
     def mainloop(self):
         self.root.mainloop()

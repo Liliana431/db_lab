@@ -13,5 +13,4 @@ class SalesBook:
         self.read_invoice_list()
 
     def read_invoice_list(self):
-        print(self.date_from, self.date_to)
         self.invoice_list = [1, 2]
