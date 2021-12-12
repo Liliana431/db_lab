@@ -3,6 +3,7 @@ import re
 from tkinter import ttk
 
 from src.organization import create_organization
+from src.product import create_product
 
 
 class CreateProduct:
@@ -48,7 +49,6 @@ class CreateProduct:
 
         Label(master=self.content, wraplength=400, text="НДС").grid(row=5, column=0, columnspan=2)
         self.NDS = ttk.Combobox(master=self.content, values=['10%', '20%', 'товар, не облагаемый налогом', 'товар на экспорт'])
-        self.NDS.insert(0, self.NDS_text)
         self.NDS.grid(row=5, column=2, columnspan=3)
 
         Label(master=self.content, wraplength=400, text="Код ОКДП").grid(row=6, column=0, columnspan=2)
@@ -92,11 +92,17 @@ class CreateProduct:
                 and self.NDS_text):
             self.add_product()
         else:
-            print(self.name_text
-                , self.measurement_text
-                , self.price_text
-                , self.excise_duty_text
-                , self.OKPO_text
-                , self.NDS_text)
+            create_product(name=self.name_text,
+                           measurement=self.measurement_text,
+                           price=self.price_text,
+                           excise_duty=self.excise_duty_text,
+                           OKDP=self.OKPO_text,
+                           NDS=self.NDS_text)
+            # print(self.name_text
+            #     , self.measurement_text
+            #     , self.price_text
+            #     , self.excise_duty_text
+            #     , self.OKPO_text
+            #     , self.NDS_text)
             self.content.destroy()
             self.add_invoice()
