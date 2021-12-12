@@ -62,12 +62,12 @@ class CreateProduct:
     def submit_product(self):
         self.name_text = self.name.get().strip()
         self.measurement_text = self.measurement.get().strip()
-        if re.fullmatch(r'\d*[.,]\d\d', self.price.get()):
+        if re.fullmatch(r'\d*,\d\d', self.price.get()):
             self.price_text = self.price.get()
         else:
             self.price_text = ''
 
-        if re.fullmatch(r'\d*[.,]\d\d', self.excise_duty.get()):
+        if re.fullmatch(r'\d*,\d\d', self.excise_duty.get()):
             self.excise_duty_text = self.excise_duty.get()
         else:
             self.excise_duty_text = ''
@@ -98,11 +98,5 @@ class CreateProduct:
                            excise_duty=self.excise_duty_text,
                            OKDP=self.OKPO_text,
                            NDS=self.NDS_text)
-            # print(self.name_text
-            #     , self.measurement_text
-            #     , self.price_text
-            #     , self.excise_duty_text
-            #     , self.OKPO_text
-            #     , self.NDS_text)
             self.content.destroy()
             self.add_invoice()

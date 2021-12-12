@@ -11,7 +11,7 @@ class MainView:
         self.invoice_list = SalesBook()
         self.root = Tk()
         self.root.title('Книга продаж')
-        self.root.geometry('1000x600')
+        self.root.geometry('1200x600')
 
         self.menu = Menu(self.root)
         self.create_main_menu()
