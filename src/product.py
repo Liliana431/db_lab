@@ -1,4 +1,5 @@
 from datetime import date
+from decimal import Decimal
 
 from config import sql, CURSOR as cursor
 
@@ -24,15 +25,15 @@ def get_product(id, count):
     cursor.execute('SELECT * FROM product WHERE id = %s', str(id))
     prod = {}
     record = cursor.fetchone()
-    prod['name'] = record[1]
-    prod['measurement'] = record[2]
-    prod['price'] = float(record[3].replace(',', '.')[:-2])
-    prod['excise_duty'] = float(record[4].replace(',', '.')[:-2])
-    prod['OKDP'] = record[6]
-    prod['NDC'] = 10 if record[5] == 1 else 20 if record[5] == 2 else 0
-    prod['count'] = count
-    prod['sum_price'] = prod['price'] * count
-    prod['sum_excise_duty'] = prod['excise_duty'] * count
-    prod['sum_NDS'] = prod['sum_price'] / (100 - prod['NDC']) * prod['NDC']
-    prod['all_sum'] = prod['sum_price'] + prod['sum_NDS']
-    return prod
+    # prod['name'] = record[1]
+    # prod['measurement'] = record[2]
+    # prod['price'] = record[3]
+    # prod['excise_duty'] = record[4]
+    # prod['OKDP'] = record[6]
+    record['NDC'] = 10 if record['NDC'] == 1 else 20 if record['NDC'] == 2 else 0
+    record['count'] = count
+    record['sum_price'] = record['price'] * Decimal(count)
+    record['sum_excise_duty'] = record['excise_duty'] * Decimal(count)
+    record['sum_NDS'] = record['sum_price'] / (100 - record['NDC']) * record['NDC']
+    record['all_sum'] = record['sum_price'] + record['sum_NDS']
+    return record

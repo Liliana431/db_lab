@@ -27,7 +27,7 @@ class CreateInvoice:
         self.orgs = get_organization_list()
         orgs_name = []
         for org in self.orgs:
-            orgs_name.append(org[1])
+            orgs_name.append(org['name'])
 
         Label(master=self.content, wraplength=1000, text="Создать счет-фактуру").grid(row=0, column=0, columnspan=5)
 
@@ -64,7 +64,7 @@ class CreateInvoice:
         self.prods = get_product_list()
         products_name = []
         for prod in self.prods:
-            products_name.append(prod[1])
+            products_name.append(prod['name'])
 
         Label(master=self.product, text="Добавить товар").grid(row=7, column=0)
         self.prod = ttk.Combobox(master=self.product, values=products_name, width=10)
@@ -113,8 +113,8 @@ class CreateInvoice:
 
     def add_prod_to_list(self):
         for prod in self.prods:
-            if re.fullmatch(r'\d*(,\d*)?', self.count.get()) and self.prod.get() == prod[1]:
-                self.product_list.append((prod[0], int(self.count.get())))
+            if re.fullmatch(r'\d*(,\d*)?', self.count.get()) and self.prod.get() == prod['name']:
+                self.product_list.append((prod['id'], float(self.count.get())))
                 break
         self.add_product()
 
