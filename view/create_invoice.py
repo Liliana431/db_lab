@@ -156,6 +156,7 @@ class CreateInvoice:
             self.add_invoice()
         else:
             create_invoice(provider, buyer, carrier, consignee, extensions, doc_num, doc_date, product_list)
+            self.content.destroy()
             self.create_main_menu()
 
     def add_organization(self):

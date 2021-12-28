@@ -104,7 +104,7 @@ class MainView:
         self.sales_book.grid(row=4, columnspan=4)
 
     def add_invoice(self):
-        inv = CreateInvoice(self.root, self.content, self.create_main_menu)
+        inv = CreateInvoice(self.root, self.content, self.show_sales_book)
         self.content = inv.content
 
     def mainloop(self):
