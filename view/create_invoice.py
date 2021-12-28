@@ -147,10 +147,10 @@ class CreateInvoice:
         if re.fullmatch(r'\d*', self.doc_num.get()):
             doc_num = self.doc_num.get()
 
-        if re.fullmatch(r'\d*', self.doc_date.get()):
+        if re.fullmatch(r'\d{4}-\d{2}-\d{2}', self.doc_date.get()):
             doc_date = self.doc_date.get()
 
-        product_list = [i[1] for i in self.product_list]
+        product_list = [i[0] for i in self.product_list]
 
         if not (provider and buyer and carrier and consignee and doc_num and doc_date):
             self.add_invoice()

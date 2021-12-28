@@ -4,22 +4,28 @@ from config import sql, CURSOR as cursor
 
 
 def create_invoice(provider, buyer, carrier, consignee, extensions, doc_num, doc_date, product_list):
-    create_invoice_header()
-    print("все ок")
-
-    # d = date.today()
-    # values = [
-    #     (name, measurement, price, excise_duty, NDS, OKDP, d)
-    # ]
-    # insert = sql.SQL('INSERT INTO product (name, measurement, price, excise_duty, "NDC", "OKDP", date) VALUES {}').format(
-    #     sql.SQL(',').join(map(sql.Literal, values))
-    # )
-    # cursor.execute(insert)
+    invoice_id = create_invoice_header(provider, buyer, carrier, consignee, extensions, doc_num, doc_date)
+    values = []
+    for i in product_list:
+        values.append((invoice_id, i))
+    insert = sql.SQL('INSERT INTO invoice(id_header, id_product) VALUES {}').format(
+        sql.SQL(',').join(map(sql.Literal, values))
+    )
+    cursor.execute(insert)
 
 
-def create_invoice_header():
-    pass
-
+def create_invoice_header(provider, buyer, carrier, consignee, extensions, doc_num, doc_date):
+    d_today = date.today()
+    values = [
+        (d_today, doc_num, doc_date, provider, buyer, carrier, consignee, extensions)
+    ]
+    insert = sql.SQL('INSERT INTO invoice_header'
+                     '(date, id_pay_settl_doc, date_pay_settl_doc, provider, buyer, carrier, consignee, extensions)'
+                     'VALUES {} RETURNING id').format(
+        sql.SQL(',').join(map(sql.Literal, values))
+    )
+    cursor.execute(insert)
+    return cursor.fetchone()['id']
 
 # def get_product_list():
 #     cursor.execute('SELECT DISTINCT ON ("name") id, name FROM product ORDER BY "name", "date" DESC')
