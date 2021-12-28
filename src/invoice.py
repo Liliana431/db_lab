@@ -27,12 +27,23 @@ def create_invoice_header(provider, buyer, carrier, consignee, extensions, doc_n
     cursor.execute(insert)
     return cursor.fetchone()['id']
 
-# def get_product_list():
-#     cursor.execute('SELECT DISTINCT ON ("name") id, name FROM product ORDER BY "name", "date" DESC')
-#     orgs = cursor.fetchall()
-#     return orgs
-#
-#
+
+def get_invoice_list():
+    cursor.execute('SELECT DISTINCT ON ("name") id, name FROM product ORDER BY "name", "date" DESC')
+    invoices = cursor.fetchall()
+    invoices = [{"invoice_date": 'дата',
+                 "invoice_num": 1,
+                 "provider_name": 'имя покупателя',
+                 "provider_num": 2,
+                 "sum": "всего с ндс",
+                 "20withoutNDS": "20безНДС",
+                 "20withNDS": "20сНДС",
+                 "10withoutNDS": "10безНДС",
+                 "10withNDS": "10сНДС",
+                 "without_tax": "без налога"}]
+    return invoices
+
+
 # def get_product(id, count):
 #     cursor.execute('SELECT * FROM product WHERE id = %s', str(id))
 #     record = cursor.fetchone()

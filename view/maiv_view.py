@@ -1,7 +1,5 @@
 from tkinter import *
-from tkinter import ttk
 
-from src.organization import get_organization_list
 from src.sales_book import SalesBook
 from view.create_invoice import CreateInvoice
 
