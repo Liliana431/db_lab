@@ -23,13 +23,7 @@ def get_product_list():
 
 def get_product(id, count):
     cursor.execute('SELECT * FROM product WHERE id = %s', str(id))
-    prod = {}
     record = cursor.fetchone()
-    # prod['name'] = record[1]
-    # prod['measurement'] = record[2]
-    # prod['price'] = record[3]
-    # prod['excise_duty'] = record[4]
-    # prod['OKDP'] = record[6]
     record['NDC'] = 10 if record['NDC'] == 1 else 20 if record['NDC'] == 2 else 0
     record['count'] = count
     record['sum_price'] = record['price'] * Decimal(count)

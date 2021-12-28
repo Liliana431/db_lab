@@ -2,6 +2,7 @@ from tkinter import *
 from tkinter import ttk
 import re
 
+from src.invoice import create_invoice
 from src.organization import get_organization_list
 from src.product import get_product_list, get_product
 from view.create_organization import CreateOrganization
@@ -16,7 +17,7 @@ class CreateInvoice:
         self.product = Frame(self.content)
 
         self.orgs = None
-        self.prods = None
+        self.all_prods = None
         self.product_list = []  # список продуктов вида (ид_прод, количество)
 
         self.add_invoice()
@@ -50,9 +51,17 @@ class CreateInvoice:
         self.consignee = ttk.Combobox(master=self.content, values=orgs_name, width=60)
         self.consignee.grid(row=5, column=1, columnspan=2)
 
-        Label(master=self.content, wraplength=400, text="Дополнения").grid(row=6, column=0)
+        Label(master=self.content, wraplength=400, text="Номер платежно-рассчетного документа").grid(row=6, column=0)
+        self.doc_num = Entry(master=self.content, width=60)
+        self.doc_num.grid(row=6, column=1, columnspan=2)
+
+        Label(master=self.content, wraplength=400, text="Дата платежно-рассчетного документа").grid(row=7, column=0)
+        self.doc_date = Entry(master=self.content, width=60)
+        self.doc_date.grid(row=7, column=1, columnspan=2)
+
+        Label(master=self.content, wraplength=400, text="Дополнения").grid(row=8, column=0)
         self.extensions = Entry(master=self.content, width=60)
-        self.extensions.grid(row=6, column=1, columnspan=2)
+        self.extensions.grid(row=8, column=1, columnspan=2)
 
         self.add_product()
 
@@ -61,9 +70,9 @@ class CreateInvoice:
     def add_product(self):
         self.product.destroy()
         self.product = Frame(self.content)
-        self.prods = get_product_list()
+        self.all_prods = get_product_list()
         products_name = []
-        for prod in self.prods:
+        for prod in self.all_prods:
             products_name.append(prod['name'])
 
         Label(master=self.product, text="Добавить товар").grid(row=7, column=0)
@@ -109,11 +118,11 @@ class CreateInvoice:
             i += 1
         Label(master=self.product, text='Всего к оплате: ').grid(row=i, column=0)
         Label(master=self.product, text=to_be_paid).grid(row=i, column=1)
-        self.product.grid(row=7, column=0, columnspan=8)
+        self.product.grid(row=9, column=0, columnspan=8)
 
     def add_prod_to_list(self):
-        for prod in self.prods:
-            if re.fullmatch(r'\d*(,\d*)?', self.count.get()) and self.prod.get() == prod['name']:
+        for prod in self.all_prods:
+            if re.fullmatch(r'\d*(.\d*)?', self.count.get()) and self.prod.get() == prod['name']:
                 self.product_list.append((prod['id'], float(self.count.get())))
                 break
         self.add_product()
@@ -123,24 +132,31 @@ class CreateInvoice:
         self.content = prod.content
 
     def submit_invoice(self):
-        provider, buyer, carrier, consignee = None, None, None, None
+        provider, buyer, carrier, consignee, doc_num, doc_date = None, None, None, None, None, None
         extensions = self.extensions.get()
         for org in self.orgs:
-            if self.provider.get() == org[1]:
-                provider = org[0]
-            if self.buyer.get() == org[1]:
-                buyer = org[0]
-            if self.carrier.get() == org[1]:
-                carrier = org[0]
-            if self.consignee.get() == org[1]:
-                consignee = org[0]
+            if self.provider.get() == org['name']:
+                provider = org['id']
+            if self.buyer.get() == org['name']:
+                buyer = org['id']
+            if self.carrier.get() == org['name']:
+                carrier = org['id']
+            if self.consignee.get() == org['name']:
+                consignee = org['id']
 
-        # информация о товарах
+        if re.fullmatch(r'\d*', self.doc_num.get()):
+            doc_num = self.doc_num.get()
 
-        if not (provider and buyer and carrier and consignee):
+        if re.fullmatch(r'\d*', self.doc_date.get()):
+            doc_date = self.doc_date.get()
+
+        product_list = [i[1] for i in self.product_list]
+
+        if not (provider and buyer and carrier and consignee and doc_num and doc_date):
             self.add_invoice()
         else:
-            pass
+            create_invoice(provider, buyer, carrier, consignee, extensions, doc_num, doc_date, product_list)
+            self.create_main_menu()
 
     def add_organization(self):
         org = CreateOrganization(self.root, self.content, self.add_invoice)
