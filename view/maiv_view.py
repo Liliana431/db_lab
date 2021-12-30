@@ -1,5 +1,6 @@
 from tkinter import *
 
+from src.invoice import get_invoice_list
 from src.sales_book import SalesBook
 from view.create_invoice import CreateInvoice
 
@@ -98,7 +99,20 @@ class MainView:
         Label(master=self.sales_book, wraplength=100, text="Сумма НДС").grid(row=3, column=7)
 
         # список счет-фактур
-        Label(master=self.sales_book, text=(str(self.date_from) + ' ' + str(self.date_to))).grid(row=6)
+        r = 4
+        for inv in get_invoice_list():
+            Label(master=self.sales_book, wraplength=100, text=f"{inv['invoice_date']} №{inv['invoice_num']}").grid(row=r, column=0)
+            Label(master=self.sales_book, wraplength=100, text=inv['buyer_name']).grid(row=r, column=1)
+            Label(master=self.sales_book, wraplength=100, text=inv['buyer_num']).grid(row=r, column=2)
+            Label(master=self.sales_book, wraplength=100, text=inv['sum']).grid(row=r, column=3)
+            Label(master=self.sales_book, wraplength=100, text=inv['20withoutNDS']).grid(row=r, column=4)
+            Label(master=self.sales_book, wraplength=100, text=inv['20NDS']).grid(row=r, column=5)
+            Label(master=self.sales_book, wraplength=100, text=inv['10withoutNDS']).grid(row=r, column=6)
+            Label(master=self.sales_book, wraplength=100, text=inv['10NDS']).grid(row=r, column=7)
+            Label(master=self.sales_book, wraplength=100, text=inv['without_tax']).grid(row=r, column=8)
+            Label(master=self.sales_book, wraplength=100, text=inv['export']).grid(row=r, column=9)
+            r += 1
+
         self.sales_book.grid(row=4, columnspan=4)
 
     def add_invoice(self):

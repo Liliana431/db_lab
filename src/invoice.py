@@ -7,8 +7,8 @@ def create_invoice(provider, buyer, carrier, consignee, extensions, doc_num, doc
     invoice_id = create_invoice_header(provider, buyer, carrier, consignee, extensions, doc_num, doc_date)
     values = []
     for i in product_list:
-        values.append((invoice_id, i))
-    insert = sql.SQL('INSERT INTO invoice(id_header, id_product) VALUES {}').format(
+        values.append((invoice_id, i[0], i[1]))
+    insert = sql.SQL('INSERT INTO invoice(id_header, id_product, count) VALUES {}').format(
         sql.SQL(',').join(map(sql.Literal, values))
     )
     cursor.execute(insert)
@@ -29,28 +29,44 @@ def create_invoice_header(provider, buyer, carrier, consignee, extensions, doc_n
 
 
 def get_invoice_list():
-    cursor.execute('SELECT DISTINCT ON ("name") id, name FROM product ORDER BY "name", "date" DESC')
+    cursor.execute('''
+    SELECT 
+        ih."id" "invoice_num",
+        ih."date" "invoice_date",
+        comp."id" "buyer_num",
+        comp."name" "buyer_name",
+        sum(prod."price" * inv."count") "sum",
+        sum(CASE
+            WHEN prod."NDS" = 2 THEN prod."price" * inv."count" * 0.8
+            ELSE 0
+        END) "20withoutNDS",
+        sum(CASE
+            WHEN prod."NDS" = 2 THEN prod."price" * inv."count" * 0.2
+            ELSE 0
+        END) "20NDS",
+        sum(CASE
+            WHEN prod."NDS" = 1 THEN prod."price" * inv."count" * 0.9
+            ELSE 0
+        END) "10withoutNDS",
+        sum(CASE
+            WHEN prod."NDS" = 1 THEN prod."price" * inv."count" * 0.1
+            ELSE 0
+        END) "10NDS",
+        sum(CASE
+            WHEN prod."NDS" > 30 THEN prod."price" * inv."count"
+            ELSE 0
+        END) "without_tax",
+        sum(CASE
+            WHEN prod."NDS" = 31 THEN prod."price" * inv."count"
+            ELSE 0
+        END) "export"
+    FROM 
+        "invoice" inv
+        JOIN "invoice_header" ih ON inv."id_header" = ih."id"
+        JOIN "company" comp ON ih."buyer" = comp."id"
+        JOIN "product" prod ON prod."id" = inv."id_product"
+    GROUP BY ih."id", comp."id"
+    ORDER BY ih."date"
+    ''')
     invoices = cursor.fetchall()
-    invoices = [{"invoice_date": 'дата',
-                 "invoice_num": 1,
-                 "provider_name": 'имя покупателя',
-                 "provider_num": 2,
-                 "sum": "всего с ндс",
-                 "20withoutNDS": "20безНДС",
-                 "20withNDS": "20сНДС",
-                 "10withoutNDS": "10безНДС",
-                 "10withNDS": "10сНДС",
-                 "without_tax": "без налога"}]
     return invoices
-
-
-# def get_product(id, count):
-#     cursor.execute('SELECT * FROM product WHERE id = %s', str(id))
-#     record = cursor.fetchone()
-#     record['NDC'] = 10 if record['NDC'] == 1 else 20 if record['NDC'] == 2 else 0
-#     record['count'] = count
-#     record['sum_price'] = record['price'] * Decimal(count)
-#     record['sum_excise_duty'] = record['excise_duty'] * Decimal(count)
-#     record['sum_NDS'] = record['sum_price'] / (100 - record['NDC']) * record['NDC']
-#     record['all_sum'] = record['sum_price'] + record['sum_NDS']
-#     return record

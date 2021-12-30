@@ -111,7 +111,7 @@ class CreateInvoice:
             Label(master=self.product, text=prod['excise_duty']).grid(row=i, column=5)
             Label(master=self.product, text=prod['sum_price']).grid(row=i, column=6)
             Label(master=self.product, text=prod['sum_excise_duty']).grid(row=i, column=7)
-            Label(master=self.product, text=prod['NDC']).grid(row=i, column=8)
+            Label(master=self.product, text=prod['NDS']).grid(row=i, column=8)
             Label(master=self.product, text=prod['sum_NDS']).grid(row=i, column=9)
             Label(master=self.product, text=prod['all_sum']).grid(row=i, column=10)
             to_be_paid += prod['all_sum']
@@ -150,12 +150,10 @@ class CreateInvoice:
         if re.fullmatch(r'\d{4}-\d{2}-\d{2}', self.doc_date.get()):
             doc_date = self.doc_date.get()
 
-        product_list = [i[0] for i in self.product_list]
-
         if not (provider and buyer and carrier and consignee and doc_num and doc_date):
             self.add_invoice()
         else:
-            create_invoice(provider, buyer, carrier, consignee, extensions, doc_num, doc_date, product_list)
+            create_invoice(provider, buyer, carrier, consignee, extensions, doc_num, doc_date, self.product_list)
             self.content.destroy()
             self.create_main_menu()
 

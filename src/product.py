@@ -9,7 +9,7 @@ def create_product(name, measurement, price, excise_duty, NDS, OKDP):
     values = [
         (name, measurement, price, excise_duty, NDS, OKDP, d)
     ]
-    insert = sql.SQL('INSERT INTO product (name, measurement, price, excise_duty, "NDC", "OKDP", date) VALUES {}').format(
+    insert = sql.SQL('INSERT INTO product (name, measurement, price, excise_duty, "NDS", "OKDP", date) VALUES {}').format(
         sql.SQL(',').join(map(sql.Literal, values))
     )
     cursor.execute(insert)
@@ -24,10 +24,10 @@ def get_product_list():
 def get_product(id, count):
     cursor.execute('SELECT * FROM product WHERE id = %s', str(id))
     record = cursor.fetchone()
-    record['NDC'] = 10 if record['NDC'] == 1 else 20 if record['NDC'] == 2 else 0
+    record['NDS'] = 10 if record['NDS'] == 1 else 20 if record['NDS'] == 2 else 0
     record['count'] = count
-    record['sum_price'] = record['price'] * Decimal(count)
+    record['all_sum'] = record['price'] * Decimal(count)
+    record['sum_NDS'] = record['all_sum'] * Decimal(record['NDS'] / 100)
+    record['sum_price'] = record['all_sum'] - record['sum_NDS']
     record['sum_excise_duty'] = record['excise_duty'] * Decimal(count)
-    record['sum_NDS'] = record['sum_price'] / (100 - record['NDC']) * record['NDC']
-    record['all_sum'] = record['sum_price'] + record['sum_NDS']
     return record
