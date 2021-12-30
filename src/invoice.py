@@ -69,5 +69,67 @@ def get_invoice_list_from_date_period(date_from, date_to):
     GROUP BY ih."id", comp."id"
     ORDER BY ih."date", ih."id"
     ''', (date_from, date_to))
-    invoices = cursor.fetchall()
-    return invoices
+    return cursor.fetchall()
+
+
+def get_simple_invoice(inv_id):
+    cursor.execute('''
+        SELECT 
+            ih."id" "id",
+            provider."name" "provider",
+            buyer."name" "buyer",
+            carrier."name" "carrier",
+            consignee."name" "consignee",
+            ih."id_pay_settl_doc" "doc_num",
+            ih."date_pay_settl_doc" "doc_date",
+            ih."extensions" "extensions"                    
+        FROM 
+            "invoice_header" ih
+            JOIN "company" provider ON provider."id" = ih."provider"
+            JOIN "company" buyer ON buyer."id" = ih."buyer"
+            JOIN "company" carrier ON carrier."id" = ih."carrier"
+            JOIN "company" consignee ON consignee."id" = ih."consignee"
+        WHERE %s = ih.id
+        ''', (inv_id, ))
+    invoice = cursor.fetchone()
+
+    cursor.execute('''
+        SELECT 
+            inv."id_product" "id",
+            inv."count" "count"         
+        FROM 
+            "invoice" inv
+        WHERE %s = inv.id_header
+    ''', (inv_id,))
+    products = cursor.fetchall()
+    return invoice, products
+
+
+def update_invoice(inv_id, provider, buyer, carrier, consignee, extensions, doc_num, doc_date, product_list):
+    update_invoice_header(inv_id, provider, buyer, carrier, consignee, extensions, doc_num, doc_date)
+    update_product_list(inv_id, product_list)
+
+
+def update_invoice_header(inv_id, provider, buyer, carrier, consignee, extensions, doc_num, doc_date):
+    cursor.execute('''
+        UPDATE invoice_header
+        SET id_pay_settl_doc=%s, date_pay_settl_doc=%s, provider=%s, buyer=%s, carrier=%s, consignee=%s, extensions=%s
+        WHERE id = %s
+    ''', (doc_num, doc_date, provider, buyer, carrier, consignee, extensions, inv_id))
+
+
+def update_product_list(inv_id, new_product_list):
+    cursor.execute('SELECT id_product, count FROM invoice WHERE id_header = %s', (inv_id, ))
+    old_prods = [(p['id_product'], p['count']) for p in cursor.fetchall()]
+
+    new_prods = [(inv_id, p[0], p[1]) for p in new_product_list if p not in old_prods]
+    deleted_prods = [p[0] for p in old_prods if p not in new_product_list]
+
+    if deleted_prods:
+        cursor.execute('DELETE FROM invoice WHERE id_header = %s AND id_product=ANY(%s::integer[])', (inv_id, deleted_prods))
+
+    if new_prods:
+        insert = sql.SQL('INSERT INTO invoice(id_header, id_product, count) VALUES {}').format(
+            sql.SQL(',').join(map(sql.Literal, new_prods))
+        )
+        cursor.execute(insert)

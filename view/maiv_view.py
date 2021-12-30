@@ -29,14 +29,11 @@ class MainView:
         # меню
         sales_book = Menu(self.menu, tearoff=0)
         sales_book.add_command(label='Показать за период', command=self.show_sales_book)
+        sales_book.add_command(label='Добавить счет-фактуру', command=self.add_invoice)
         self.menu.add_cascade(label='Книга продаж', menu=sales_book)
 
-        invoice = Menu(self.menu, tearoff=0)
-        invoice.add_command(label='Добавить', command=self.add_invoice)
-        self.menu.add_cascade(label='Счет-фактура', menu=invoice)
-
         search = Menu(self.menu, tearoff=0)
-        search.add_command(label='по номеру', command=self.by_num)
+        search.add_command(label='по номеру', command=self.search_by_num)
         self.menu.add_cascade(label='Поиск счет-фактур', menu=search)
 
         self.root.config(menu=self.menu)
@@ -67,10 +64,10 @@ class MainView:
 
     def update_sales_book(self):
         ddf = self.edf.get()
-        if ddf:
+        if re.fullmatch(r'\d{4}-\d{2}-\d{2}', ddf):
             self.date_from = ddf
         ddt = self.edt.get()
-        if ddt:
+        if re.fullmatch(r'\d{4}-\d{2}-\d{2}', ddt):
             self.date_to = ddt
         self.create_invoice_list()
 
@@ -117,11 +114,13 @@ class MainView:
 
     def add_invoice(self):
         inv = CreateInvoice(self.root, self.content, self.show_sales_book)
+        inv.add_invoice()
         self.content = inv.content
 
-    def by_num(self):
-        # поиск счет-фактуры по номеру с возможностью редактировать и печатать
-        pass
+    def search_by_num(self):
+        inv = CreateInvoice(self.root, self.content, self.show_sales_book)
+        inv.update_invoice()
+        self.content = inv.content
 
     def mainloop(self):
         self.root.mainloop()
