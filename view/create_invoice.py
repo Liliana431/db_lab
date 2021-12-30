@@ -118,12 +118,26 @@ class CreateInvoice:
             i += 1
         Label(master=self.product, text='Всего к оплате: ').grid(row=i, column=0)
         Label(master=self.product, text=to_be_paid).grid(row=i, column=1)
+        Label(master=self.product, text='Удалить из списка продукт').grid(row=i+1, column=0, columnspan=2)
+        self.del_prod = ttk.Combobox(master=self.product, values=products_name, width=10)
+        self.del_prod.grid(row=i+1, column=2)
+        Button(self.product, text='ОК', command=self.del_prod_to_list).grid(row=i+1, column=4)
+
         self.product.grid(row=9, column=0, columnspan=8)
 
     def add_prod_to_list(self):
         for prod in self.all_prods:
             if re.fullmatch(r'\d*(.\d*)?', self.count.get()) and self.prod.get() == prod['name']:
                 self.product_list.append((prod['id'], float(self.count.get())))
+                break
+        self.add_product()
+
+    def del_prod_to_list(self):
+        for prod in self.all_prods:
+            if self.del_prod.get() == prod['name']:
+                for i in self.product_list:
+                    if i[0] == prod['id']:
+                        self.product_list.remove(i)
                 break
         self.add_product()
 

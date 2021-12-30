@@ -66,7 +66,7 @@ def get_invoice_list():
         JOIN "company" comp ON ih."buyer" = comp."id"
         JOIN "product" prod ON prod."id" = inv."id_product"
     GROUP BY ih."id", comp."id"
-    ORDER BY ih."date"
+    ORDER BY ih."date", ih."id" 
     ''')
     invoices = cursor.fetchall()
     return invoices

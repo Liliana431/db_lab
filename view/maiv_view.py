@@ -27,7 +27,6 @@ class MainView:
     def create_main_menu(self):
         # меню
         sales_book = Menu(self.menu, tearoff=0)
-        sales_book.add_command(label='Дополнить вручную')
         sales_book.add_command(label='Показать за период', command=self.show_sales_book)
         self.menu.add_cascade(label='Книга продаж', menu=sales_book)
 
@@ -36,8 +35,8 @@ class MainView:
         self.menu.add_cascade(label='Счет-фактура', menu=invoice)
 
         search = Menu(self.menu, tearoff=0)
-        search.add_command(label='Счет-фактура по номеру')
-        self.menu.add_cascade(label='Поиск', menu=search)
+        search.add_command(label='по номеру', command=self.by_num)
+        self.menu.add_cascade(label='Поиск счет-фактур', menu=search)
 
         self.root.config(menu=self.menu)
 
@@ -118,6 +117,10 @@ class MainView:
     def add_invoice(self):
         inv = CreateInvoice(self.root, self.content, self.show_sales_book)
         self.content = inv.content
+
+    def by_num(self):
+        # поиск счет-фактуры по номеру с возможностью редактировать и печатать
+        pass
 
     def mainloop(self):
         self.root.mainloop()
