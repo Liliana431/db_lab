@@ -1,13 +1,13 @@
+import datetime
+from calendar import monthrange
 from tkinter import *
 
-from src.invoice import get_invoice_list
-from src.sales_book import SalesBook
+from src.invoice import get_invoice_list_from_date_period
 from view.create_invoice import CreateInvoice
 
 
 class MainView:
     def __init__(self):
-        self.invoice_list = SalesBook()
         self.root = Tk()
         self.root.title('Книга продаж')
         self.root.geometry('1200x600')
@@ -16,8 +16,9 @@ class MainView:
         self.create_main_menu()
 
         # для списка счет-фактур
-        self.date_from = self.invoice_list.date_from
-        self.date_to = self.invoice_list.date_to
+        today = datetime.date.today()
+        self.date_from = datetime.date(today.year, today.month, 1)
+        self.date_to = datetime.date(today.year, today.month, monthrange(today.year, today.month)[1])
 
         self.content = Frame(self.root)  # главное окно
         self.sales_book = Frame(self.content)  # только для списка счет-фактур, приизменении даты меняется только он
@@ -99,7 +100,7 @@ class MainView:
 
         # список счет-фактур
         r = 4
-        for inv in get_invoice_list():
+        for inv in get_invoice_list_from_date_period(self.date_from, self.date_to):
             Label(master=self.sales_book, wraplength=100, text=f"{inv['invoice_date']} №{inv['invoice_num']}").grid(row=r, column=0)
             Label(master=self.sales_book, wraplength=100, text=inv['buyer_name']).grid(row=r, column=1)
             Label(master=self.sales_book, wraplength=100, text=inv['buyer_num']).grid(row=r, column=2)

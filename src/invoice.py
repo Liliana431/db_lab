@@ -28,7 +28,7 @@ def create_invoice_header(provider, buyer, carrier, consignee, extensions, doc_n
     return cursor.fetchone()['id']
 
 
-def get_invoice_list():
+def get_invoice_list_from_date_period(date_from, date_to):
     cursor.execute('''
     SELECT 
         ih."id" "invoice_num",
@@ -65,8 +65,9 @@ def get_invoice_list():
         JOIN "invoice_header" ih ON inv."id_header" = ih."id"
         JOIN "company" comp ON ih."buyer" = comp."id"
         JOIN "product" prod ON prod."id" = inv."id_product"
+    WHERE %s <= ih."date" AND ih."date" <= %s
     GROUP BY ih."id", comp."id"
-    ORDER BY ih."date", ih."id" 
-    ''')
+    ORDER BY ih."date", ih."id"
+    ''', (date_from, date_to))
     invoices = cursor.fetchall()
     return invoices
