@@ -2,7 +2,6 @@ from tkinter import *
 import re
 from tkinter import ttk
 
-from src.organization import create_organization
 from src.product import create_product
 
 

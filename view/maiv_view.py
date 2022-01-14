@@ -1,6 +1,7 @@
 import datetime
 from calendar import monthrange
 from tkinter import *
+import re
 
 from src.invoice import get_invoice_list_from_date_period
 from view.create_invoice import CreateInvoice
@@ -97,6 +98,7 @@ class MainView:
 
         # список счет-фактур
         r = 4
+        c, s = 0, 0
         for inv in get_invoice_list_from_date_period(self.date_from, self.date_to):
             Label(master=self.sales_book, wraplength=100, text=f"{inv['invoice_date']} №{inv['invoice_num']}").grid(row=r, column=0)
             Label(master=self.sales_book, wraplength=100, text=inv['buyer_name']).grid(row=r, column=1)
@@ -108,8 +110,10 @@ class MainView:
             Label(master=self.sales_book, wraplength=100, text=inv['10NDS']).grid(row=r, column=7)
             Label(master=self.sales_book, wraplength=100, text=inv['without_tax']).grid(row=r, column=8)
             Label(master=self.sales_book, wraplength=100, text=inv['export']).grid(row=r, column=9)
+            c += 1
+            s += inv['sum']
             r += 1
-
+        Label(master=self.sales_book, text=f'Всего продаж {c} на сумму {s}').grid(row=r, column=0, columnspan=3)
         self.sales_book.grid(row=4, columnspan=4)
 
     def add_invoice(self):

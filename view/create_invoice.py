@@ -215,6 +215,7 @@ class CreateInvoice:
 
     def submit_product(self):
         prod = CreateProduct(self.root, self.content, self.add_invoice)
+        self.content.destroy()
         self.content = prod.content
 
     def submit_invoice(self):
